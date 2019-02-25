@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Messenger</title>
+    <!-- версия для разработки, включает отображение полезных предупреждений в консоли?,
+     скрипт закомментирован, так как загружен необходимый плагин -->
+    <!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+    <!--<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>-->
+    <script th:inline="javascript">
+        var frontendData = [[${frontendData}]];
+    </script>
+</head>
+<body>
+<h3>Simple Messenger</h3>
+<div id="app"></div>
+<!--<script src="/js/main.js"></script>-->
+<!--Если используется режим разработчика искать main.js на localhost:8000, если он не обнаружен в папке /js -->
+<script th:src="${isDevMode} ? 'http://localhost:8000/main.js' : '/js/main.js'"></script>
+</body>
+</html>

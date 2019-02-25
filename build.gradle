@@ -1,0 +1,39 @@
+buildscript {
+    ext {
+        springBootVersion = '2.1.2.RELEASE'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'messenger'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compile('org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.1.1.RELEASE')
+    compile('com.microsoft.sqlserver:mssql-jdbc:7.1.0.jre10-preview')
+    compile("org.springframework.boot:spring-boot-starter-thymeleaf")
+    compile('org.springframework.session:spring-session-jdbc')    
+    compile('org.projectlombok:lombok')
+    compile('javax.xml.bind:jaxb-api')
+//    compile('com.sun.xml.bind:jaxb-core')
+    compile('com.sun.xml.bind:jaxb-impl')
+    runtime('org.springframework.boot:spring-boot-devtools')
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
