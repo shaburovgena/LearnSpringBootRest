@@ -7,7 +7,7 @@ module.exports = {
     //Режим разработки, заменить перед деплоем
     mode: 'development',
     devtool: 'source-map',
-    //Сборка проекта будет начинатьсяс указанных файлов
+    //Сборка проекта будет начинаться с указанных файлов
     entry: path.join(__dirname, 'src', 'main', 'resources', 'static', 'js', 'main.js'),
     devServer: {
         contentBase: './dist',
@@ -15,7 +15,10 @@ module.exports = {
         port: 8000,
         allowedHosts: [
             'localhost:9000'
-        ]
+        ],
+        //
+        stats: 'errors-only',
+        clientLogLevel: 'error',
     },
     module: {
         rules: [
@@ -32,6 +35,13 @@ module.exports = {
             {//Пропускаем через vue-loader все *.vue файлы
                 test: /\.vue$/,
                 loader: 'vue-loader'
+            },
+            {//Все *.css файалы будут скомпанованы loaderom в один файл
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader'
+                ]
             }
         ]
     },
