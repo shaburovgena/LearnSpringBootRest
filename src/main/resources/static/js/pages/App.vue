@@ -3,19 +3,19 @@
         <v-toolbar app>
             <v-toolbar-title>Simple messenger</v-toolbar-title>
             <v-spacer></v-spacer>
-            <span v-if = "profile">{{profile.name}}</span>
-            <v-btn v-if = "profile" icon href="/logout" flat>
+            <span v-if="profile">{{profile.name}}</span>
+            <v-btn v-if="profile" icon href="/logout" flat>
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
         </v-toolbar>
 
         <v-content>
-            <v-container  v-if="!profile">Необходимо авторизоваться через
+            <v-container v-if="!profile">Необходимо авторизоваться через
                 <a href="/login">Google</a>
-            </v-container >
-            <v-container v-if = "profile">
+            </v-container>
+            <v-container v-if="profile">
                 <messages-list :messages="messages"/>
-            </v-container >
+            </v-container>
         </v-content>
 
     </v-app>
@@ -39,11 +39,27 @@
         },
         created() {
             addHandler(data => {
-                let index = getIndex(this.messages, data.id)
-                if (index > -1) {
-                    this.messages.splice(index, 1, data)
-                } else {
-                    this.messages.push(data)
+                if (data.objectType === 'MESSAGE') {
+                    const index = this.messages.findIndex(item => item.id === data.body.id)
+                    switch (data.eventType) {
+                        case 'CREATE':
+                        case 'UPDATE':
+                            if(index > -1){
+                                this.messages.splice(index, 1 ,data.body)
+                            }else{
+                                this.messages.push(data.body)
+                            }
+                            break
+                        case 'REMOVE':
+                            this.messages.splice(index, 1 )
+
+                            break
+                        default://Интерполяция js вставит в вывод консоли тип события
+                            console.error('Looks like the event type if unknown "${data.eventType}"')
+                    }
+
+                }else {
+                    console.error('Looks like the object type if unknown "${data.objectType}"')
                 }
             })
         }
