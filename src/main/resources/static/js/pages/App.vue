@@ -25,7 +25,6 @@
 <script>
     import MessagesList from 'components/messages/MessageList.vue'
     import {addHandler} from 'util/ws'
-    import {getIndex} from 'util/collections'
 
     export default {
         components: {
@@ -52,7 +51,6 @@
                             break
                         case 'REMOVE':
                             this.messages.splice(index, 1 )
-
                             break
                         default://Интерполяция js вставит в вывод консоли тип события
                             console.error('Looks like the event type if unknown "${data.eventType}"')
