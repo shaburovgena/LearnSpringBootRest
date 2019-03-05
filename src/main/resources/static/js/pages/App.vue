@@ -2,20 +2,20 @@
     <v-app>
         <v-toolbar app>
             <v-toolbar-title>Simple messenger</v-toolbar-title>
+            <v-btn flat v-if="profile" :disabled="$route.path === '/'" @click="showMessages">
+                Messages
+            </v-btn>
             <v-spacer></v-spacer>
-            <span v-if="profile">{{profile.name}}</span>
+            <v-btn v-if="profile" flat :disabled="$route.path === '/'" @click="showProfile">{{profile.name}}</v-btn>
             <v-btn v-if="profile" icon href="/logout" flat>
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
         </v-toolbar>
 
         <v-content>
-            <v-container v-if="!profile">Необходимо авторизоваться через
-                <a href="/login">Google</a>
-            </v-container>
-            <v-container v-if="profile">
-                <messages-list/>
-            </v-container>
+
+
+            <router-view></router-view>
         </v-content>
 
     </v-app>
@@ -24,16 +24,20 @@
 
 <script>
     import {mapMutations, mapState} from 'vuex'
-    import MessagesList from 'components/messages/MessageList.vue'
     import {addHandler} from 'util/ws'
 
     export default {
 
-        components: {
-            MessagesList
-        },
         computed: mapState(['profile']),
-        methods: mapMutations(['addMessageMutation', 'updateMessageMutation', 'removeMessageMutation']),
+        methods: {
+            ...mapMutations(['addMessageMutation', 'updateMessageMutation', 'removeMessageMutation']),
+            showMessages(){
+                this.$router.push('/')
+            },
+            showProfile(){
+                this.$router.push('/profile')
+            }
+        },
         created() {
             addHandler(data => {
                 if (data.objectType === 'MESSAGE') {
@@ -55,6 +59,10 @@
                     console.error('Looks like the object type if unknown "${data.objectType}"')
                 }
             })
+        },
+        beforeMount(){
+            if(!this.profile){}
+            this.$router.replace('/auth')
         }
     }
 </script>
