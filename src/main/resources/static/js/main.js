@@ -14,6 +14,7 @@ if (frontendData.profile) {
 Vue.use(Vuetify)
 new Vue({
     el: '#app',
+    router,
     store, //Краткий аналог записи store: store,
     //Необходимо в компонент #app поместить отрендеренный App
     render: a => a(App)
