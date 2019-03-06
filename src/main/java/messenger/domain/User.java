@@ -1,6 +1,7 @@
 package messenger.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "users")
 @Data
+@AllArgsConstructor
 public class User implements Serializable {
     @Id
     private String id;
