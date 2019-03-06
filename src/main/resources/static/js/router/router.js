@@ -6,15 +6,15 @@ import Profile from 'pages/Profile.vue'
 
 Vue.use(VueRouter)
 
-const router = [
+const routes = [
 //Порядок маппинга имеет значение
     {path: '/', component: MessagesList},
-    {path: '/ath', component: Auth},
+    {path: '/auth', component: Auth},
+    {path: '/profile', component: Profile},
     {path: '*', component: MessagesList},
 ]
 
 export default new VueRouter({
     mode: 'history',
-
     routes
 })

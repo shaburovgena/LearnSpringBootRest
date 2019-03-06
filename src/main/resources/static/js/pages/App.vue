@@ -2,11 +2,11 @@
     <v-app>
         <v-toolbar app>
             <v-toolbar-title>Simple messenger</v-toolbar-title>
-            <v-btn flat v-if="profile" :disabled="$route.path === '/'" @click="showMessages">
+            <v-btn  v-if="profile" flat :disabled="$route.path === '/'" @click="showMessages">
                 Messages
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn v-if="profile" flat :disabled="$route.path === '/'" @click="showProfile">{{profile.name}}</v-btn>
+            <v-btn v-if="profile" flat :disabled="$route.path === '/profile'" @click="showProfile">{{profile.name}}</v-btn>
             <v-btn v-if="profile" icon href="/logout" flat>
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
@@ -23,18 +23,17 @@
 </template>
 
 <script>
-    import {mapMutations, mapState} from 'vuex'
-    import {addHandler} from 'util/ws'
-
+    import { mapState, mapMutations } from 'vuex'
+    import { addHandler } from 'util/ws'
     export default {
 
         computed: mapState(['profile']),
         methods: {
             ...mapMutations(['addMessageMutation', 'updateMessageMutation', 'removeMessageMutation']),
-            showMessages(){
+            showMessages() {
                 this.$router.push('/')
             },
-            showProfile(){
+            showProfile() {
                 this.$router.push('/profile')
             }
         },
@@ -60,9 +59,10 @@
                 }
             })
         },
-        beforeMount(){
-            if(!this.profile){}
-            this.$router.replace('/auth')
+        beforeMount() {
+            if (!this.profile) {
+                this.$router.replace('/auth')
+            }
         }
     }
 </script>
