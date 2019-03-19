@@ -1,5 +1,5 @@
 <template>
-    <v-layout row>
+    <v-layout row class="px-3">
         <v-text-field label="Add comment"
                       placeholder="Write comment"
                       v-model="text"
@@ -11,7 +11,8 @@
 </template>
 
 <script>
-    import { mapActions } from 'vuex'
+    import {mapActions} from 'vuex'
+
     export default {
         name: 'CommentForm',
         props: ['messageId'],

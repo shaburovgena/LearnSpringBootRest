@@ -1,7 +1,9 @@
 package messenger.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import messenger.domain.Comment;
 import messenger.domain.User;
+import messenger.domain.Views;
 import messenger.service.CommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +23,8 @@ public class CommentController {
         this.commentService = commentService;
     }
     @PostMapping
+    @JsonView(Views.FullComment.class)
+
     public Comment create(
             @RequestBody Comment comment,
             @AuthenticationPrincipal User user

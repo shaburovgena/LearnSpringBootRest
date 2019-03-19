@@ -23,13 +23,19 @@
 </template>
 
 <script>
-    import { mapState, mapMutations } from 'vuex'
-    import { addHandler } from 'util/ws'
+    import {mapMutations, mapState} from 'vuex'
+    import {addHandler} from 'util/ws'
+
     export default {
 
         computed: mapState(['profile']),
         methods: {
-            ...mapMutations(['addMessageMutation', 'updateMessageMutation', 'removeMessageMutation']),
+            ...mapMutations([
+                'addMessageMutation',
+                'updateMessageMutation',
+                'removeMessageMutation',
+                'addCommentMutation'
+            ]),
             showMessages() {
                 this.$router.push('/')
             },
