@@ -8,12 +8,12 @@
 
 <script>
     export default {
-        name: "Youtube",
+        name: 'Youtube',
         props: ['src'],
         computed:{
             targetSrc(){
-                let parts = this.src.split('/')
-                return 'https://www.youtube.com/embed/${parts[parts.length - 1]}'
+                let parts = this.src.split('/');
+                return `https://www.youtube.com/embed/${parts[parts.length - 1]}`
             }
         }
     }

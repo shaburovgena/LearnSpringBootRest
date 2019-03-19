@@ -14,7 +14,6 @@ import java.util.List;
 @Table
 @ToString(of = {"id", "text"})
 @EqualsAndHashCode(of = {"id"})
-@Data
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +44,25 @@ public class Message {
     @OneToMany(mappedBy = "message", orphanRemoval = true)
     @JsonView(Views.FullMessage.class)
     private List<Comment> comments;
+
+    public Message() {
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public String getLink() {
         return link;

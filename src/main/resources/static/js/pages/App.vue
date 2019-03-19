@@ -2,24 +2,20 @@
     <v-app>
         <v-toolbar app>
             <v-toolbar-title>Simple messenger</v-toolbar-title>
-            <v-btn  v-if="profile" flat :disabled="$route.path === '/'" @click="showMessages">
+            <v-btn flat v-if="profile" :disabled="$route.path === '/'" @click="showMessages">
                 Messages
             </v-btn>
             <v-spacer></v-spacer>
-            <v-btn v-if="profile" flat :disabled="$route.path === '/profile'" @click="showProfile">{{profile.name}}</v-btn>
+            <v-btn flat v-if="profile" :disabled="$route.path === '/profile'" @click="showProfile">{{profile.name}}
+            </v-btn>
             <v-btn v-if="profile" icon href="/logout" flat>
                 <v-icon>exit_to_app</v-icon>
             </v-btn>
         </v-toolbar>
-
         <v-content>
-
-
             <router-view></router-view>
         </v-content>
-
     </v-app>
-
 </template>
 
 <script>
@@ -48,20 +44,30 @@
                 if (data.objectType === 'MESSAGE') {
                     switch (data.eventType) {
                         case 'CREATE':
-                            this.addMessageMutation(data.body)
-                            break
+                            this.addMessageMutation(data.body);
+                            break;
                         case 'UPDATE':
-                            this.updateMessageMutation(data.body)
-                            break
+                            this.updateMessageMutation(data.body);
+                            break;
                         case 'REMOVE':
-                            this.removeMessageMutation(data.body)
-                            break
+                            this.removeMessageMutation(data.body);
+                            break;
                         default://Интерполяция js вставит в вывод консоли тип события
-                            console.error('Looks like the event type if unknown "${data.eventType}"')
+                            console.error(`Looks like the event type if unknown "${data.eventType}"`)
+                    }
+
+                } else if (data.objectType === 'COMMENT') {
+                    switch (data.eventType) {
+                        case 'CREATE':
+                            this.addCommentMutation(data.body);
+                            break;
+
+                        default://Интерполяция js вставит в вывод консоли тип события
+                            console.error(`Looks like the event type if unknown "${data.eventType}"`)
                     }
 
                 } else {
-                    console.error('Looks like the object type if unknown "${data.objectType}"')
+                    console.error(`Looks like the object type if unknown "${data.objectType}"`)
                 }
             })
         },
