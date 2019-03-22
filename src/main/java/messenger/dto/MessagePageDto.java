@@ -6,6 +6,7 @@ import messenger.domain.Views;
 
 import java.util.List;
 
+//Разобраться
 @JsonView(Views.FullMessage.class)
 public class MessagePageDto {
 private List<Message>messages;
