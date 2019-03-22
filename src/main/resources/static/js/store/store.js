@@ -3,12 +3,13 @@ import Vuex from 'vuex'
 import messagesApi from 'api/messages'
 import commentApi from "api/comment"
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 export default new Vuex.Store({
 
     state: {
         messages,
-        profile: frontendData.profile
+        //оператор спред (...) получает мап frontendData и разбивает на пару ключ-значение (аналог frontendData.getEntry()
+        ...frontendData
     },
     getters: {
         sortedMessages: state =>
@@ -23,7 +24,7 @@ export default new Vuex.Store({
             ]
         },
         updateMessageMutation(state, message) {
-            const updateIndex = state.messages.findIndex(item => item.id === message.id)
+            const updateIndex = state.messages.findIndex(item => item.id === message.id);
             state.messages = [
                 ...state.messages.slice(0, updateIndex),
                 message,
@@ -31,7 +32,7 @@ export default new Vuex.Store({
             ]
         },
         removeMessageMutation(state, message) {
-            const deletionIndex = state.messages.findIndex(item => item.id === message.id)
+            const deletionIndex = state.messages.findIndex(item => item.id === message.id);
             if (deletionIndex > -1) {
                 state.messages = [
                     ...state.messages.slice(0, deletionIndex),
@@ -40,8 +41,8 @@ export default new Vuex.Store({
             }
         },
         addCommentMutation(state, comment) {
-            const updateIndex = state.messages.findIndex(item => item.id === comment.message.id)
-            const message = state.messages[updateIndex]
+            const updateIndex = state.messages.findIndex(item => item.id === comment.message.id);
+            const message = state.messages[updateIndex];
 
             if (!message.comments.find(it => it.id === comment.id)) {
                 state.messages = [
@@ -57,12 +58,31 @@ export default new Vuex.Store({
                 ]
             }
         },
+        addMessagePageMutation(state, messages) {
+            const targetMessages = state.messages
+                .concat(messages)
+                //При получении сообщений и от вебсокета и при создании в браузере данные могут быть задублированы
+                //необходимо их проверять
+                .reduce((res, val) => {
+                    //Пробегать по всем парам ключ-значение, при совпадении двух сообщений возвращать одно
+                    res[val.id] = val;
+                    return res;
+                }, {});
+            //Получение содержимого объекта методом values()
+            state.messages = Object.values(targetMessages)
+        },
+        updateTotalPagesMutation(state, totalPages) {
+            state.totalPages = totalPages
+        },
+        updateCurrentPageMutation(state, currentPage) {
+            state.currentPage = currentPage
+        }
     },
     actions: {
         async addMessageAction({commit, state}, message) {
-            const result = await messagesApi.add(message)
-            const data = await result.json()
-            const index = state.messages.findIndex(item => item.id === data.id)
+            const result = await messagesApi.add(message);
+            const data = await result.json();
+            const index = state.messages.findIndex(item => item.id === data.id);
 
             if (index > -1) {
                 commit('updateMessageMutation', data)
@@ -72,21 +92,31 @@ export default new Vuex.Store({
 
         },
         async updateMessageAction({commit}, message) {
-            const result = await messagesApi.update(message)
-            const data = await result.json()
+            const result = await messagesApi.update(message);
+            const data = await result.json();
             commit('updateMessageMutation', data)
 
         },
         async removeMessageAction({commit}, message) {
-            const result = await messagesApi.remove(message.id)
+            const result = await messagesApi.remove(message.id);
             if (result.ok) {
                 commit('removeMessageMutation', message)
             }
         },
         async addCommentAction({commit, state}, comment) {
-            const response = await commentApi.add(comment)
-            const data = await response.json()
+            const response = await commentApi.add(comment);
+            const data = await response.json();
             commit('addCommentMutation', data)
+        },
+        async loadPageAction({commit, state}) {
+            const response = await messagesApi.page(state.currentPage + 1);
+            const data = await response.json();
+
+            commit('addMessagePageMutation', data.messages);
+            commit('updateTotalPagesMutation', data.totalPages);
+            //Чтобы не удалось запросить больше страниц чем есть в сторе используем Math.min(от.значение, до.значение)
+            commit('updateCurrentPageMutation', Math.min(data.currentPage, data.totalPages));
         }
+
     }
 })
