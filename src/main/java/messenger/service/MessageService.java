@@ -90,8 +90,9 @@ public class MessageService {
 
     public Message update(Message message, Message messageFromDb) throws IOException {
         BeanUtils.copyProperties(message, messageFromDb, "id");
+       fillMeta(messageFromDb);
         Message updatedMessage = messageRepo.save(messageFromDb);
-        fillMeta(messageFromDb);
+
         wcSender.accept(EventType.UPDATE, updatedMessage);
         return updatedMessage;
     }
@@ -110,7 +111,7 @@ public class MessageService {
         return new MessagePageDto(
                 page.getContent(),
                 pageable.getPageNumber(),
-                (int) page.getTotalElements()
+                page.getTotalPages()
         );
     }
 }

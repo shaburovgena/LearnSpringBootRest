@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import messenger.domain.User;
 import messenger.domain.Views;
 import messenger.dto.MessagePageDto;
+import messenger.repo.UserDetailsRepo;
 import messenger.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,18 +25,25 @@ import java.util.HashMap;
 public class MainController {
 
     private final MessageService messageService;
+    private final UserDetailsRepo userDetailsRepo;
 
     @Value("${spring.profiles.active}")
     private String profile;
-    private final ObjectWriter writer;
+    private final ObjectWriter messageWriter;
+    private final ObjectWriter profileWriter;
 
     @Autowired
-    public MainController(MessageService messageService, ObjectMapper mapper) {
+    public MainController(MessageService messageService, UserDetailsRepo userDetailsRepo, ObjectMapper mapper) {
         this.messageService = messageService;
+        this.userDetailsRepo = userDetailsRepo;
 
-        this.writer = mapper
-                .setConfig(mapper.getSerializationConfig())
+        ObjectMapper objectMapper = mapper
+                .setConfig(mapper.getSerializationConfig());
+
+        this.messageWriter = objectMapper
                 .writerWithView(Views.FullMessage.class);
+        this.profileWriter = objectMapper
+                .writerWithView(Views.FullProfile.class);
     }
 
 
@@ -45,20 +53,24 @@ public class MainController {
             @AuthenticationPrincipal User user
     ) throws JsonProcessingException {
         HashMap<Object, Object> data = new HashMap<>();
+
         if (user != null) {
-            data.put("profile", user);
+            User userFromDb = userDetailsRepo.findById(user.getId()).get();
+            String serializedProfile = profileWriter.writeValueAsString(userFromDb);
+            model.addAttribute("profile", serializedProfile);
 
             Sort sort = Sort.by(Sort.Direction.DESC, "id");
-            PageRequest pageRequest = PageRequest.of(0, MessageController.MESSAGES_OER_PAGE, sort);
+            PageRequest pageRequest = PageRequest.of(0, MessageController.MESSAGES_PER_PAGE, sort);
 
             MessagePageDto messagePageDto = messageService.findAll(pageRequest);
-            String messages = writer.writeValueAsString(messagePageDto.getMessages());
+            String messages = messageWriter.writeValueAsString(messagePageDto.getMessages());
 
             model.addAttribute("messages", messages);
             data.put("currentPage", messagePageDto.getCurrentPage());
             data.put("totalPages", messagePageDto.getTotalPages());
-        }else {
+        } else {
             model.addAttribute("messages", "[]");
+            model.addAttribute("profile", "null");
         }
         model.addAttribute("frontendData", data);
         model.addAttribute("isDevMode", "dev".equals(profile));

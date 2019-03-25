@@ -1,14 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import messagesApi from 'api/messages'
-import commentApi from "api/comment"
+import commentApi from 'api/comment'
 
 Vue.use(Vuex);
 export default new Vuex.Store({
 
     state: {
         messages,
-        //оператор спред (...) получает мап frontendData и разбивает на пару ключ-значение (аналог frontendData.getEntry()
+        profile,
+        //оператор спред (...) получает мап frontendData и разбивает на пару ключ-значение (аналог frontendData.getEntry())
         ...frontendData
     },
     getters: {

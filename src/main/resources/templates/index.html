@@ -10,8 +10,9 @@
     <!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
     <!--<script src="https://cdn.jsdelivr.net/npm/vue-resource@1.5.1"></script>-->
     <script th:inline="javascript">
-        let frontendData = [[${frontendData}]];
-        let messages = [# th:utext = "${messages}" /];
+        var frontendData = [[${frontendData}]];
+        var messages = [# th:utext="${messages}" /];
+        var profile = [# th:utext="${profile}" /];
     </script>
 </head>
 <body>

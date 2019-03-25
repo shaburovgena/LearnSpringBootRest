@@ -10,7 +10,8 @@ const routes = [
 //Порядок маппинга имеет значение
     {path: '/', component: MessagesList},
     {path: '/auth', component: Auth},
-    {path: '/profile', component: Profile},
+    //Знак вопроса указывает, что параметр id не обязателен, чтобы был еще маппинг на просто "/user"
+    {path: '/user/:id?', component: Profile},
     {path: '*', component: MessagesList},
 ]
 
