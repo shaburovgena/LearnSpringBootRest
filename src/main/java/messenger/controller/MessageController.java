@@ -18,7 +18,8 @@ import java.io.IOException;
 @RestController
 @RequestMapping("message")
 public class MessageController {
-public static final int MESSAGES_PER_PAGE= 3;
+    public static final int MESSAGES_PER_PAGE = 3;
+
     private final MessageService messageService;
 
     @Autowired
@@ -29,9 +30,10 @@ public static final int MESSAGES_PER_PAGE= 3;
     @GetMapping
     @JsonView(Views.FullMessage.class)
     public MessagePageDto list(
-            @PageableDefault(size = MESSAGES_PER_PAGE, sort = {"id"}, direction = Sort.Direction.DESC) Pageable pageable
+            @AuthenticationPrincipal User user,
+            @PageableDefault(size = MESSAGES_PER_PAGE, sort = { "id" }, direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        return messageService.findAll(pageable);
+        return messageService.findForUser(pageable, user);
     }
 
     @GetMapping("{id}")
@@ -40,11 +42,12 @@ public static final int MESSAGES_PER_PAGE= 3;
         return message;
     }
 
-
     @PostMapping
     public Message create(
             @RequestBody Message message,
-            @AuthenticationPrincipal User user) throws IOException {
+            @AuthenticationPrincipal User user
+    ) throws IOException {
+        System.out.println("Creating");
         return messageService.create(message, user);
     }
 
@@ -53,15 +56,11 @@ public static final int MESSAGES_PER_PAGE= 3;
             @PathVariable("id") Message messageFromDb,
             @RequestBody Message message
     ) throws IOException {
-        //Скопирует все данные из message в messageFromDb, кроме id
-        return messageService.update(message, messageFromDb);
+        return messageService.update(messageFromDb, message);
     }
 
     @DeleteMapping("{id}")
     public void delete(@PathVariable("id") Message message) {
         messageService.delete(message);
     }
-
-
-
 }

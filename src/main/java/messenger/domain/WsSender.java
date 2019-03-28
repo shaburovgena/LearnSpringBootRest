@@ -12,12 +12,12 @@ import java.util.function.BiConsumer;
 
 
 @Component
-public class WcSender {
+public class WsSender {
     private final SimpMessagingTemplate template;
     private final ObjectMapper mapper;
 
 
-    public WcSender(SimpMessagingTemplate template, ObjectMapper mapper) {
+    public WsSender(SimpMessagingTemplate template, ObjectMapper mapper) {
         this.template = template;
         this.mapper = mapper;
     }

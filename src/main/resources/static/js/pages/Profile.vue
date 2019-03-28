@@ -4,7 +4,7 @@
             <v-flex :xs6="!$vuetify.breakpoint.xsOnly">
                 <div class="title mb-3">User profile</div>
                 <v-layout row justify-space-between>
-                    <v-flex>
+                    <v-flex class="px-1">
                         <v-img :src="profile.userpic"></v-img>
                     </v-flex>
                     <v-flex class="px-1">
@@ -14,8 +14,8 @@
                             <v-flex>{{profile.gender}}</v-flex>
                             <!--<v-flex>{{profile.email}}</v-flex> //Отображение мыла только для текущего пользователя-->
                             <v-flex>{{profile.lastVisit}}</v-flex>
-                            <v-flex>{{profile.subscriptions && profile.subscriptions.length}} Subscriptions</v-flex>
-                            <v-flex>{{profile.subscribers && profile.subscribers.length}} Subscribers</v-flex>
+                            <v-flex>{{profile.subscriptions && profile.subscriptions.length}} subscriptions</v-flex>
+                            <v-flex>{{profile.subscribers && profile.subscribers.length}} subscribers</v-flex>
                         </v-layout>
                     </v-flex>
                 </v-layout>
@@ -48,7 +48,7 @@
             isISubscribed() {
                 return this.profile.subscribers &&
                     this.profile.subscribers.find(subscription => {
-                        return subscription.id === this.$store.state.profile.id
+                        return subscription.subscriber === this.$store.state.profile.id
                     })
             }
         },

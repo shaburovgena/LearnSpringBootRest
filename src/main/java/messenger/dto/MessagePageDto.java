@@ -6,6 +6,9 @@ import messenger.domain.Views;
 
 import java.util.List;
 
+/**
+ * Класс для организации пагинации
+ */
 //Разобраться
 @JsonView(Views.FullMessage.class)
 public class MessagePageDto {

@@ -3,7 +3,7 @@ package messenger.service;
 import messenger.domain.Comment;
 import messenger.domain.User;
 import messenger.domain.Views;
-import messenger.domain.WcSender;
+import messenger.domain.WsSender;
 import messenger.dto.EventType;
 import messenger.dto.ObjectType;
 import messenger.repo.CommentRepo;
@@ -19,9 +19,9 @@ public class CommentService {
     private final BiConsumer<EventType, Comment> wcSender;
 
     @Autowired
-    public CommentService(CommentRepo commentRepo, WcSender wcSender) {
+    public CommentService(CommentRepo commentRepo, WsSender wsSender) {
         this.commentRepo = commentRepo;
-        this.wcSender = wcSender.getSender(ObjectType.COMMENT, Views.FullComment.class);
+        this.wcSender = wsSender.getSender(ObjectType.COMMENT, Views.FullComment.class);
     }
 
     public Comment create(Comment comment, User user) {

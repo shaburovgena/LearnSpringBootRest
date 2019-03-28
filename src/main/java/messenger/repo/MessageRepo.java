@@ -1,13 +1,16 @@
 package messenger.repo;
 
 import messenger.domain.Message;
+import messenger.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MessageRepo extends JpaRepository <Message, Long> {
+import java.util.List;
 
-@EntityGraph(attributePaths = {"comments"})
-Page<Message> findAll(Pageable pageable);
+public interface MessageRepo extends JpaRepository<Message, Long> {
+
+    @EntityGraph(attributePaths = {"comments"})
+    Page<Message> findByAuthorIn(List<User> users, Pageable pageable);
 }

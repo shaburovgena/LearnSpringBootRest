@@ -1,14 +1,12 @@
 package messenger.service;
 
-import messenger.domain.Message;
-import messenger.domain.User;
-import messenger.domain.Views;
-import messenger.domain.WcSender;
+import messenger.domain.*;
 import messenger.dto.EventType;
 import messenger.dto.MessagePageDto;
 import messenger.dto.MetaDto;
 import messenger.dto.ObjectType;
 import messenger.repo.MessageRepo;
+import messenger.repo.UserSubscriptionRepo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,9 +19,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class MessageService {
@@ -35,15 +35,20 @@ public class MessageService {
     private static Pattern URL_REGEX = Pattern.compile(URL_PATTERN, Pattern.CASE_INSENSITIVE);
     private static Pattern IMAGE_REGEX = Pattern.compile(IMAGE_PATTERN, Pattern.CASE_INSENSITIVE);
 
-    private final BiConsumer<EventType, Message> wcSender;
+    private final UserSubscriptionRepo userSubscriptionRepo;
+    private final BiConsumer<EventType, Message> wsSender;
     private MessageRepo messageRepo;
 
     @Autowired
-    public MessageService(MessageRepo messageRepo, WcSender wcSender) {
-        this.wcSender = wcSender.getSender(ObjectType.MESSAGE, Views.IdName.class);
+    public MessageService(UserSubscriptionRepo userSubscriptionRepo,
+                          MessageRepo messageRepo,
+                          WsSender wsSender) {
+        this.userSubscriptionRepo = userSubscriptionRepo;
+        this.wsSender = wsSender.getSender(ObjectType.MESSAGE, Views.IdName.class);
         this.messageRepo = messageRepo;
     }
 
+    //Заполняет метаданные сообщения (ссылка на картинку, видео и т.д.)
     private void fillMeta(Message message) throws IOException {
         String text = message.getText();
         Matcher matcher = URL_REGEX.matcher(text);
@@ -85,15 +90,15 @@ public class MessageService {
 
     public void delete(Message message) {
         messageRepo.delete(message);
-        wcSender.accept(EventType.REMOVE, message);
+        wsSender.accept(EventType.REMOVE, message);
     }
 
-    public Message update(Message message, Message messageFromDb) throws IOException {
+    public Message update(Message messageFromDb, Message message) throws IOException {
         BeanUtils.copyProperties(message, messageFromDb, "id");
-       fillMeta(messageFromDb);
+        fillMeta(messageFromDb);
         Message updatedMessage = messageRepo.save(messageFromDb);
 
-        wcSender.accept(EventType.UPDATE, updatedMessage);
+        wsSender.accept(EventType.UPDATE, updatedMessage);
         return updatedMessage;
     }
 
@@ -102,12 +107,19 @@ public class MessageService {
         fillMeta(message);
         message.setAuthor(user);
         Message updatedMessage = messageRepo.save(message);
-        wcSender.accept(EventType.CREATE, updatedMessage);
+        wsSender.accept(EventType.CREATE, updatedMessage);
         return updatedMessage;
     }
 
-    public MessagePageDto findAll(Pageable pageable) {
-        Page<Message> page = messageRepo.findAll(pageable);
+    public MessagePageDto findForUser(Pageable pageable, User user) {
+        List<User> channels = userSubscriptionRepo.findBySubscriber(user)
+                .stream()
+                .map(UserSubscription::getChannel)
+                .collect(Collectors.toList());
+
+        channels.add(user);
+
+        Page<Message> page = messageRepo.findByAuthorIn(channels, pageable);
         return new MessagePageDto(
                 page.getContent(),
                 pageable.getPageNumber(),

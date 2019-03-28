@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        //Разрешаем неавторизованные запросы на адреса
         http
                 .authorizeRequests()
                 .mvcMatchers("/", "/login**", "/js/**", "/error**").permitAll()
@@ -27,11 +28,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable();
     }
 
+    //СОздание пользователя на основании данных google
     @Bean
     public PrincipalExtractor principalExtractor(UserDetailsRepo userDetailsRepo) {
         return map -> {
+            //Получаем id из пришедшего ответа json
             String id = (String) map.get("sub");
-
+            //Если пользователь не найден в базе создаем нового
             User user = userDetailsRepo.findById(id).orElseGet(() -> {
                 User newUser = new User();
                 newUser.setId(id);
@@ -43,6 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
                 return newUser;
             });
+            //Устанавливаем дату последнего визита (логина)
             user.setLastVisit(LocalDateTime.now());
             return userDetailsRepo.save(user);
         };
