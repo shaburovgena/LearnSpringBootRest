@@ -50,6 +50,7 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.3'
     compile('com.microsoft.sqlserver:mssql-jdbc:7.1.0.jre10-preview')
     compile('org.projectlombok:lombok')
+    compile('org.postgresql:postgresql')
     compile ('io.sentry:sentry-spring:1.7.16')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
