@@ -13,9 +13,12 @@ buildscript {
 plugins {
     id "com.moowork.node" version "1.3.1"
 }
+
 apply plugin: 'java'
+apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
 
 group = 'messenger'
 version = '0.0.1-SNAPSHOT'
@@ -23,6 +26,7 @@ sourceCompatibility = '1.8'
 task buildFront(type: YarnTask) {
     args = ['build']
 }
+
 yarn_install.dependsOn(yarn_cache_clean)
 buildFront.dependsOn(yarn_install)
 processResources.dependsOn(buildFront)
@@ -31,6 +35,9 @@ repositories {
     mavenCentral()
 }
 
+node {
+    download = true
+}
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
@@ -43,6 +50,6 @@ dependencies {
     compile 'org.jsoup:jsoup:1.11.3'
     compile('com.microsoft.sqlserver:mssql-jdbc:7.1.0.jre10-preview')
     compile('org.projectlombok:lombok')
-    compile 'io.sentry:sentry-spring:1.7.16'
+    compile ('io.sentry:sentry-spring:1.7.16')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
